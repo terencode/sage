@@ -1818,9 +1818,11 @@ cdef class FreeModuleElement(Vector):   # abstract base class
             sage: v.norm(int(2))                                                        # needs sage.symbolic
             sqrt(5)
         """
+        from sage.functions.min_max import max_symbolic
+
         abs_self = [abs(x) for x in self]
         if p == Infinity:
-            return max(abs_self)
+            return max_symbolic(abs_self)
         if p < 1:
             raise ValueError("%s is not greater than or equal to 1" % p)
 
