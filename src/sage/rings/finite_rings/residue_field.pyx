@@ -306,7 +306,7 @@ class ResidueFieldFactory(UniqueFactory):
         sage: K.residue_field(K.ideal(3))                                               # needs sage.rings.number_field
         Residue field of Fractional ideal (3)
     """
-    def create_key_and_extra_args(self, p, names=None, check=True, impl=None, **kwds):
+    def create_key_and_extra_args(self, p, names = None, check=True, implementation=None, **kwds):
         """
         Return a tuple containing the key (uniquely defining data)
         and any extra arguments.
@@ -351,7 +351,7 @@ class ResidueFieldFactory(UniqueFactory):
                 names = None
         if names is None and p.ring() is not ZZ:
             names = '%sbar' % p.ring().fraction_field().variable_name()
-        key = (p, names, impl)
+        key = (p, names, implementation)
         return key, kwds
 
     def create_object(self, version, key, **kwds):
@@ -367,7 +367,7 @@ class ResidueFieldFactory(UniqueFactory):
             sage: ResidueField(P) is ResidueField(P)  # indirect doctest                # needs sage.rings.number_field
             True
         """
-        p, names, impl = key
+        p, names, implementation = key
         pring = p.ring()
 
         if pring is ZZ:
@@ -377,31 +377,31 @@ class ResidueFieldFactory(UniqueFactory):
             Kbase = pring.base_ring()
             f = p.gen()
             characteristic = Kbase.order()
-            if f.degree() == 1 and Kbase.is_prime_field() and (impl is None or impl == 'modn'):
+            if f.degree() == 1 and Kbase.is_prime_field() and (implementation is None or implementation == 'modn'):
                 return ResidueFiniteField_prime_modn(p, None, Kbase.order(), None, None, None)
             else:
                 q = characteristic**(f.degree())
-                if q < zech_log_bound and (impl is None or impl == 'givaro'):
+                if q < zech_log_bound and (implementation is None or implementation == 'givaro'):
                     try:
                         from sage.rings.finite_rings.residue_field_givaro import ResidueFiniteField_givaro
                     except ImportError:
-                        if impl is not None:
+                        if implementation is not None:
                             raise
                     else:
                         return ResidueFiniteField_givaro(p, q, names, f, None, None, None)
-                if q % 2 == 0 and (impl is None or impl == 'ntl'):
+                if q % 2 == 0 and (implementation is None or implementation == 'ntl'):
                     try:
                         from sage.rings.finite_rings.residue_field_ntl_gf2e import ResidueFiniteField_ntl_gf2e
                     except ImportError:
-                        if impl is not None:
+                        if implementation is not None:
                             raise
                     else:
                         return ResidueFiniteField_ntl_gf2e(q, names, f, "poly", p, None, None, None)
-                if impl is None or impl == 'pari':
+                if implementation is None or implementation == 'pari':
                     try:
                         from sage.rings.finite_rings.residue_field_pari_ffelt import ResidueFiniteField_pari_ffelt
                     except ImportError:
-                        if impl is not None:
+                        if implementation is not None:
                             raise
                     else:
                         return ResidueFiniteField_pari_ffelt(p, characteristic, names, f, None, None, None)
@@ -457,27 +457,27 @@ class ResidueFieldFactory(UniqueFactory):
             return ResidueFiniteField_prime_modn(p, names, p.smallest_integer(), to_vs, to_order, PB)
         else:
             q = characteristic**(f.degree())
-            if q < zech_log_bound and (impl is None or impl == 'givaro'):
+            if q < zech_log_bound and (implementation is None or implementation == 'givaro'):
                 try:
                     from sage.rings.finite_rings.residue_field_givaro import ResidueFiniteField_givaro
                 except ImportError:
-                    if impl is not None:
+                    if implementation is not None:
                         raise
                 else:
                     return ResidueFiniteField_givaro(p, q, names, f, to_vs, to_order, PB)
-            elif q % 2 == 0 and (impl is None or impl == 'ntl'):
+            elif q % 2 == 0 and (implementation is None or implementation == 'ntl'):
                 try:
                     from sage.rings.finite_rings.residue_field_ntl_gf2e import ResidueFiniteField_ntl_gf2e
                 except ImportError:
-                    if impl is not None:
+                    if implementation is not None:
                         raise
                 else:
                     return ResidueFiniteField_ntl_gf2e(q, names, f, "poly", p, to_vs, to_order, PB)
-            if impl is None or impl == 'pari':
+            if implementation is None or implementation == 'pari':
                 try:
                     from sage.rings.finite_rings.residue_field_pari_ffelt import ResidueFiniteField_pari_ffelt
                 except ImportError:
-                    if impl is not None:
+                    if implementation is not None:
                         raise
                 else:
                     return ResidueFiniteField_pari_ffelt(p, characteristic, names, f, to_vs, to_order, PB)
@@ -710,7 +710,7 @@ class ResidueField_generic(Field):
             OK = OK.ring_of_integers()
         return self.base_ring().has_coerce_map_from(R) or OK.has_coerce_map_from(R)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """
         Return a string describing this residue field.
 
@@ -733,8 +733,8 @@ class ResidueField_generic(Field):
              Univariate Polynomial Ring in t over Finite Field of size 17
         """
         if self.p.ring() is ZZ:
-            return "Residue field of Integers modulo %s"%self.p.gen()
-        return "Residue field %sof %s"%('in %s '%self.gen() if self.degree() > 1 else '', self.p)
+            return "Residue field of Integers modulo %s" % self.p.gen()
+        return "Residue field %sof %s" % ('in %s ' % self.gen() if self.degree() > 1 else '', self.p)
 
     def lift(self, x):
         """
